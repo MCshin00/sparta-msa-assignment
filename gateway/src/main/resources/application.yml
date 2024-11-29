@@ -1,0 +1,27 @@
+server:
+  port: 19091  # \uAC8C\uC774\uD2B8\uC6E8\uC774 \uC11C\uBE44\uC2A4\uAC00 \uC2E4\uD589\uB420 \uD3EC\uD2B8 \uBC88\uD638
+
+spring:
+  main:
+    web-application-type: reactive  # Spring \uC560\uD50C\uB9AC\uCF00\uC774\uC158\uC774 \uB9AC\uC561\uD2F0\uBE0C \uC6F9 \uC560\uD50C\uB9AC\uCF00\uC774\uC158\uC73C\uB85C \uC124\uC815\uB428
+  application:
+    name: gateway-service  # \uC560\uD50C\uB9AC\uCF00\uC774\uC158 \uC774\uB984\uC744 'gateway-service'\uB85C \uC124\uC815
+  cloud:
+    gateway:
+      routes:  # Spring Cloud Gateway\uC758 \uB77C\uC6B0\uD305 \uC124\uC815
+        - id: order-service  # \uB77C\uC6B0\uD2B8 \uC2DD\uBCC4\uC790
+          uri: lb://order-service  # 'order-service'\uB77C\uB294 \uC774\uB984\uC73C\uB85C \uB85C\uB4DC \uBC38\uB7F0\uC2F1\uB41C \uC11C\uBE44\uC2A4\uB85C \uB77C\uC6B0\uD305
+          predicates:
+            - Path=/order/**  # /order/** \uACBD\uB85C\uB85C \uB4E4\uC5B4\uC624\uB294 \uC694\uCCAD\uC744 \uC774 \uB77C\uC6B0\uD2B8\uB85C \uCC98\uB9AC
+        - id: product-service  # \uB77C\uC6B0\uD2B8 \uC2DD\uBCC4\uC790
+          uri: lb://product-service  # 'product-service'\uB77C\uB294 \uC774\uB984\uC73C\uB85C \uB85C\uB4DC \uBC38\uB7F0\uC2F1\uB41C \uC11C\uBE44\uC2A4\uB85C \uB77C\uC6B0\uD305
+          predicates:
+            - Path=/product/**  # /product/** \uACBD\uB85C\uB85C \uB4E4\uC5B4\uC624\uB294 \uC694\uCCAD\uC744 \uC774 \uB77C\uC6B0\uD2B8\uB85C \uCC98\uB9AC
+      discovery:
+        locator:
+          enabled: true  # \uC11C\uBE44\uC2A4 \uB514\uC2A4\uCEE4\uBC84\uB9AC\uB97C \uD1B5\uD574 \uB3D9\uC801\uC73C\uB85C \uB77C\uC6B0\uD2B8\uB97C \uC0DD\uC131\uD558\uB3C4\uB85D \uC124\uC815
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/  # Eureka \uC11C\uBC84\uC758 URL\uC744 \uC9C0\uC815
