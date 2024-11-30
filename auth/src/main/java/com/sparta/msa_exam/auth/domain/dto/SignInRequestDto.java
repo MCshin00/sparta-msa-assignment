@@ -1,10 +1,11 @@
 package com.sparta.msa_exam.auth.domain.dto;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
-@Builder
-public class UsernameResponseDto {
+@Setter
+public class SignInRequestDto {
     private String username;
+    private String password;
 }

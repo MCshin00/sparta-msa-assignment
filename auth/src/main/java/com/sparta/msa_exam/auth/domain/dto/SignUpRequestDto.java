@@ -8,8 +8,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Getter
 @Builder
 public class SignUpRequestDto {
-    String username;
-    String password;
+    private String username;
+    private String password;
 
     public User toEntity(PasswordEncoder passwordEncoder) {
         return User.builder()
