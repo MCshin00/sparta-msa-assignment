@@ -1,5 +1,6 @@
 package com.sparta.msa_exam.auth.config;
 
+import com.sparta.msa_exam.auth.filter.ServerPortFilter;
 import com.sparta.msa_exam.auth.jwt.JwtUtil;
 import com.sparta.msa_exam.auth.security.AuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,12 @@ public class AuthConfig {
     }
 
     @Bean
-    public AuthenticationFilter jwtAuthenticationFilter() throws Exception {
+    public ServerPortFilter serverPortFilter(){
+        return new ServerPortFilter();
+    }
+
+    @Bean
+    public AuthenticationFilter AuthenticationFilter() throws Exception {
         AuthenticationFilter filter = new AuthenticationFilter(jwtUtil);
         filter.setAuthenticationManager(authenticationManager(authenticationConfiguration));
         return filter;
@@ -57,7 +63,8 @@ public class AuthConfig {
                         .anyRequest().authenticated() // 그 외 모든 요청 인증처리
         );
 
-        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(serverPortFilter(), AuthenticationFilter.class);
+        http.addFilterBefore(AuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
