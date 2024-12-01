@@ -31,4 +31,8 @@ public class OrderProduct {
     private Long product_id;
 
     private Integer amount;
+
+    public void updateAmount(Integer amount) {
+        this.amount = amount;
+    }
 }
