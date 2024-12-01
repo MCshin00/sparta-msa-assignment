@@ -31,6 +31,13 @@ public class OrderService {
                 .build();
     }
 
+    public OrderResponseDto getOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
+
+        return OrderResponseDto.from(order);
+    }
+
     @Transactional
     public OrderResponseDto updateOrder(Long orderId, OrderUpdateRequestDto requestDto) {
         Order order = orderRepository.findById(orderId)
