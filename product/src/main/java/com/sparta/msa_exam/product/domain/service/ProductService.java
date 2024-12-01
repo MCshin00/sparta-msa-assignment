@@ -2,8 +2,10 @@ package com.sparta.msa_exam.product.domain.service;
 
 import com.sparta.msa_exam.product.domain.dto.ProductIdResponseDto;
 import com.sparta.msa_exam.product.domain.dto.ProductRequestDto;
+import com.sparta.msa_exam.product.domain.dto.ProductResponseDto;
 import com.sparta.msa_exam.product.model.entity.Product;
 import com.sparta.msa_exam.product.model.repository.ProductRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,5 +24,13 @@ public class ProductService {
         return ProductIdResponseDto.builder()
                 .product_id(product.getProduct_id())
                 .build();
+    }
+
+    public List<ProductResponseDto> getProducts() {
+        List<Product> products = productRepository.findAll();
+
+        return products.stream()
+                .map(ProductResponseDto::from)
+                .toList();
     }
 }
