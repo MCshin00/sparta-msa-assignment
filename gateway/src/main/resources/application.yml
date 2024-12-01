@@ -12,11 +12,11 @@ spring:
         - id: order-service
           uri: lb://order-service
           predicates:
-            - Path=/order/**
+            - Path=/orders/**
         - id: product-service
           uri: lb://product-service
           predicates:
-            - Path=/product/**
+            - Path=/products/**
         - id: auth-service
           uri: lb://auth-service
           predicates:
