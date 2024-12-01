@@ -11,6 +11,7 @@ import com.sparta.msa_exam.order.model.repository.OrderRepository;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,7 @@ public class OrderService {
                 .build();
     }
 
+    @Cacheable(cacheNames = "orderCache", key = "args[0]")
     public OrderResponseDto getOrder(Long orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
