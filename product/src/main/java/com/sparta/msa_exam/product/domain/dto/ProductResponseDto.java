@@ -1,12 +1,18 @@
 package com.sparta.msa_exam.product.domain.dto;
 
 import com.sparta.msa_exam.product.model.entity.Product;
+import java.io.Serializable;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @Builder
-public class ProductResponseDto {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+public class ProductResponseDto implements Serializable {
     private Long product_id;
     private String name;
     private Integer supply_price;
