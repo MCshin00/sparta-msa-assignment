@@ -26,7 +26,7 @@ public class OrderService {
     private final ProductClient productClient;
 
     @Transactional
-    @CircuitBreaker(name = "orderService", fallbackMethod = "fallbackCreateOrder")
+    @CircuitBreaker(name = "orderService", fallbackMethod = "fallbackOrder")
     public OrderResponseDto createOrder(boolean fail, OrderRequestDto requestDto) {
         if (fail) {
             throw new RuntimeException("product 요청 실패");
@@ -60,6 +60,7 @@ public class OrderService {
     }
 
     @Transactional
+    @CircuitBreaker(name = "orderService", fallbackMethod = "fallbackOrder")
     public OrderResponseDto updateOrder(Long orderId, OrderRequestDto requestDto) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
@@ -107,7 +108,7 @@ public class OrderService {
         }
     }
 
-    public OrderResponseDto fallbackCreateOrder(Throwable t) {
+    public OrderResponseDto fallbackOrder(Throwable t) {
         log.info("fallback 발생 원인 : {}", t.getMessage());
         throw new RuntimeException("잠시 후에 주문 추가를 요청 해주세요.");
     }
