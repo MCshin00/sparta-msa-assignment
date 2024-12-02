@@ -8,13 +8,16 @@ import com.sparta.msa_exam.order.domain.dto.ProductResponseDto;
 import com.sparta.msa_exam.order.model.entity.Order;
 import com.sparta.msa_exam.order.model.entity.OrderProduct;
 import com.sparta.msa_exam.order.model.repository.OrderRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -23,7 +26,12 @@ public class OrderService {
     private final ProductClient productClient;
 
     @Transactional
-    public OrderIdResponseDto createOrder() {
+    @CircuitBreaker(name = "orderService", fallbackMethod = "fallbackCreateOrder")
+    public OrderIdResponseDto createOrder(boolean fail) {
+        if (fail) {
+            throw new RuntimeException("product 요청 실패");
+        }
+
         Order order = Order.builder().build();
         orderRepository.save(order);
 
@@ -86,5 +94,10 @@ public class OrderService {
         if (!ProductsExist) {
             throw new IllegalArgumentException("존재하지 않는 상품입니다.");
         }
+    }
+
+    public OrderIdResponseDto fallbackCreateOrder(Throwable t) {
+        log.debug("fallback 발생 원인 : {}", t.getMessage());
+        throw new RuntimeException("잠시 후에 주문 추가를 요청 해주세요.");
     }
 }
