@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://${RDS_ENDPOINT}/msa_exam
+    username: ${RDS_USERNAME}
+    password: ${RDS_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
