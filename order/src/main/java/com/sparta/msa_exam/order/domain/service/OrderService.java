@@ -1,14 +1,14 @@
 package com.sparta.msa_exam.order.domain.service;
 
 import com.sparta.msa_exam.order.domain.client.ProductClient;
-import com.sparta.msa_exam.order.domain.dto.OrderIdResponseDto;
+import com.sparta.msa_exam.order.domain.dto.OrderRequestDto;
 import com.sparta.msa_exam.order.domain.dto.OrderResponseDto;
-import com.sparta.msa_exam.order.domain.dto.OrderUpdateRequestDto;
 import com.sparta.msa_exam.order.domain.dto.ProductResponseDto;
 import com.sparta.msa_exam.order.model.entity.Order;
 import com.sparta.msa_exam.order.model.entity.OrderProduct;
 import com.sparta.msa_exam.order.model.repository.OrderRepository;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -27,17 +27,28 @@ public class OrderService {
 
     @Transactional
     @CircuitBreaker(name = "orderService", fallbackMethod = "fallbackCreateOrder")
-    public OrderIdResponseDto createOrder(boolean fail) {
+    public OrderResponseDto createOrder(boolean fail, OrderRequestDto requestDto) {
         if (fail) {
             throw new RuntimeException("product 요청 실패");
         }
 
-        Order order = Order.builder().build();
+        Order order = Order.builder()
+                .orderProducts(new ArrayList<>())
+                .build();
         orderRepository.save(order);
 
-        return OrderIdResponseDto.builder()
-                .order_id(order.getOrder_id())
+        validateProductId(requestDto);
+
+        OrderProduct orderProduct = OrderProduct.builder()
+                .order(order)
+                .product_id(requestDto.getProduct_id())
+                .amount(requestDto.getAmount())
                 .build();
+        order.getOrderProducts().add(orderProduct);
+
+        orderRepository.save(order);
+
+        return OrderResponseDto.from(order);
     }
 
     @Cacheable(cacheNames = "orderCache", key = "args[0]")
@@ -49,7 +60,7 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponseDto updateOrder(Long orderId, OrderUpdateRequestDto requestDto) {
+    public OrderResponseDto updateOrder(Long orderId, OrderRequestDto requestDto) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 주문이 존재하지 않습니다."));
 
@@ -77,7 +88,7 @@ public class OrderService {
         return OrderResponseDto.from(order);
     }
 
-    private void validateProductId(OrderUpdateRequestDto requestDto) {
+    private void validateProductId(OrderRequestDto requestDto) {
         if (requestDto.getProduct_id() == null) {
             throw new IllegalArgumentException("추가할 상품을 지정해야 합니다.");
         }
@@ -96,8 +107,8 @@ public class OrderService {
         }
     }
 
-    public OrderIdResponseDto fallbackCreateOrder(Throwable t) {
-        log.debug("fallback 발생 원인 : {}", t.getMessage());
+    public OrderResponseDto fallbackCreateOrder(Throwable t) {
+        log.info("fallback 발생 원인 : {}", t.getMessage());
         throw new RuntimeException("잠시 후에 주문 추가를 요청 해주세요.");
     }
 }

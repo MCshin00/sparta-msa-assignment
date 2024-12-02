@@ -1,8 +1,7 @@
 package com.sparta.msa_exam.order.domain.controller;
 
-import com.sparta.msa_exam.order.domain.dto.OrderIdResponseDto;
+import com.sparta.msa_exam.order.domain.dto.OrderRequestDto;
 import com.sparta.msa_exam.order.domain.dto.OrderResponseDto;
-import com.sparta.msa_exam.order.domain.dto.OrderUpdateRequestDto;
 import com.sparta.msa_exam.order.domain.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -23,8 +22,8 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseEntity<OrderIdResponseDto> createOrder(@RequestParam boolean fail) {
-        OrderIdResponseDto responseDto = orderService.createOrder(fail);
+    public ResponseEntity<OrderResponseDto> createOrder(@RequestParam(required = false) boolean fail, @RequestBody OrderRequestDto requestDto) {
+        OrderResponseDto responseDto = orderService.createOrder(fail, requestDto);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
@@ -37,7 +36,7 @@ public class OrderController {
     }
 
     @PutMapping("/{orderId}")
-    public ResponseEntity<OrderResponseDto> updateOrder(@PathVariable Long orderId, @RequestBody OrderUpdateRequestDto requestDto) {
+    public ResponseEntity<OrderResponseDto> updateOrder(@PathVariable Long orderId, @RequestBody OrderRequestDto requestDto) {
         OrderResponseDto responseDto = orderService.updateOrder(orderId, requestDto);
 
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
