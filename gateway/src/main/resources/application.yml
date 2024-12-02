@@ -13,10 +13,16 @@ spring:
           uri: lb://order-service
           predicates:
             - Path=/orders/**
-        - id: product-service
+        - id: product-service-high
           uri: lb://product-service
           predicates:
             - Path=/products/**
+            - Weight=product-group, 7
+        - id: product-service-low
+          uri: lb://product-service
+          predicates:
+            - Path=/products/**
+            - Weight=product-group, 3
         - id: auth-service
           uri: lb://auth-service
           predicates:
@@ -33,3 +39,7 @@ eureka:
 service:
   jwt:
     secret-key: ${JWT_SECRET_KEY}
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
